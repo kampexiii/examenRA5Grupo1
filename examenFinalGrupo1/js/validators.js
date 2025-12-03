@@ -29,10 +29,10 @@ export const validators = {
     },
 
     /**
-     * Valida que la fecha no sea futura (puede ser hoy o pasado).
+     * Valida que la fecha no sea futura (puede ser hoy o pasado) y que sea razonable (>= 2000).
      * 
      * @param {string} dateString - La fecha que viene del input type="date" (YYYY-MM-DD).
-     * @returns {boolean} True si la fecha es válida (hoy o antes).
+     * @returns {boolean} True si la fecha es válida (entre 2000 y hoy).
      */
     isDateValid: (dateString) => {
         if (!simpleDateRegex.test(dateString)) return false;
@@ -45,6 +45,9 @@ export const validators = {
         // Creamos la fecha de hoy y le quitamos la hora para comparar solo días
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+
+        // Validar que el año sea razonable (por ejemplo, desde el año 2000)
+        if (year < 2000) return false;
         
         // Si la fecha introducida es menor o igual a hoy, es válida
         return inputDate <= today;

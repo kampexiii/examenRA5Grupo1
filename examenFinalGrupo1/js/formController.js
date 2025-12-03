@@ -103,7 +103,7 @@ export const formController = {
         let isValid = true;
 
         if (!validators.isDateValid(date)) {
-            ui.showError('err-fecha', 'La fecha no puede ser futura.');
+            ui.showError('err-fecha', 'La fecha debe ser entre el año 2000 y hoy.');
             isValid = false;
         } else {
             ui.clearError('err-fecha');
