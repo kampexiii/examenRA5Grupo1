@@ -2,36 +2,41 @@ import { validators } from './validators.js';
 import { ui } from './ui.js';
 
 /**
- * Gestiona el ciclo de vida del formulario de partidas, inicializando eventos
- * y delegando las validaciones en módulos especializados.
+ * Controlador principal del formulario.
+ * Se encarga de unir la vista (UI) con la lógica (validadores) y manejar los eventos.
  */
 export const formController = {
     /**
-     * Registra listeners de validación en vivo y controla el envío del formulario.
+     * Inicializa todo: pilla los elementos del DOM y les pone los "escuchadores" (listeners).
+     * Se llama cuando la página ya ha cargado.
      */
     init: () => {
+        // Referencias a los elementos del formulario
         const form = document.getElementById('form-partida');
         const blancasInput = document.getElementById('blancas');
         const negrasInput = document.getElementById('negras');
         const fechaInput = document.getElementById('fecha');
         const resultadoInput = document.getElementById('resultado');
 
-        // Validación en tiempo real para ofrecer feedback inmediato
+        // Eventos 'input': validamos mientras el usuario escribe para dar feedback rápido
         blancasInput.addEventListener('input', () => formController.validateBlancas());
         negrasInput.addEventListener('input', () => formController.validateNegras());
         fechaInput.addEventListener('input', () => formController.validateFecha());
         resultadoInput.addEventListener('input', () => formController.validateResultado());
 
-        // Validación previa al envío para evitar submits con datos incorrectos
+        // Evento 'submit': validamos todo junto antes de enviar
         form.addEventListener('submit', (event) => {
+            // Prevenimos el envío por defecto para que no recargue la página si hay errores
             event.preventDefault();
             formController.handleSubmit();
         });
     },
 
     /**
-     * Valida el jugador de blancas comprobando formato y que no coincida con negras.
-     * @returns {boolean} `true` si supera todas las reglas de negocio.
+     * Valida el campo del jugador de blancas.
+     * Comprueba formato y que no sea igual al de negras.
+     * 
+     * @returns {boolean} True si todo está correcto.
      */
     validateBlancas: () => {
         const blancasInput = document.getElementById('blancas');
@@ -39,6 +44,7 @@ export const formController = {
         const name = blancasInput.value;
         let isValid = true;
 
+        // 1. Validamos formato (solo letras)
         if (!validators.isValidName(name)) {
             ui.showError('err-blancas', 'El nombre debe contener solo letras y espacios.');
             isValid = false;
@@ -46,20 +52,23 @@ export const formController = {
             ui.clearError('err-blancas');
         }
 
-        // Si ambos campos tienen texto, comprobamos que no representen al mismo jugador
+        // 2. Validamos lógica de negocio (no jugar contra uno mismo)
+        // Solo si el formato es válido y el otro campo tiene algo escrito
         if (isValid && negrasInput.value && !validators.areNamesDifferent(name, negrasInput.value)) {
             ui.showError('err-blancas', 'Los jugadores no pueden ser iguales.');
             isValid = false;
         } else if (isValid) {
-            // Evitamos limpiar el error del otro campo para no interferir con su flujo de validación.
+            // Si es válido, no hacemos nada más (no borramos error del otro campo para no liar)
         }
 
         return isValid;
     },
 
     /**
-     * Valida el jugador de negras replicando la lógica del campo de blancas.
-     * @returns {boolean} `true` si el valor es aceptable.
+     * Valida el campo del jugador de negras.
+     * Es casi igual que el de blancas.
+     * 
+     * @returns {boolean} True si es válido.
      */
     validateNegras: () => {
         const blancasInput = document.getElementById('blancas');
@@ -67,6 +76,7 @@ export const formController = {
         const name = negrasInput.value;
         let isValid = true;
 
+        // 1. Formato
         if (!validators.isValidName(name)) {
             ui.showError('err-negras', 'El nombre debe contener solo letras y espacios.');
             isValid = false;
@@ -74,6 +84,7 @@ export const formController = {
             ui.clearError('err-negras');
         }
 
+        // 2. Lógica de negocio (igualdad)
         if (isValid && blancasInput.value && !validators.areNamesDifferent(blancasInput.value, name)) {
             ui.showError('err-negras', 'Los jugadores no pueden ser iguales.');
             isValid = false;
@@ -83,8 +94,9 @@ export const formController = {
     },
 
     /**
-     * Comprueba que la fecha no sea futura antes de permitir el registro.
-     * @returns {boolean} `true` cuando la fecha es válida.
+     * Valida que la fecha sea correcta (no futura).
+     * 
+     * @returns {boolean} True si la fecha vale.
      */
     validateFecha: () => {
         const fechaInput = document.getElementById('fecha');
@@ -101,8 +113,9 @@ export const formController = {
     },
 
     /**
-     * Verifica que exista una selección de resultado.
-     * @returns {boolean} `true` si se ha indicado un resultado.
+     * Valida que se haya elegido un resultado.
+     * 
+     * @returns {boolean} True si hay algo seleccionado.
      */
     validateResultado: () => {
         const resultadoInput = document.getElementById('resultado');
@@ -118,16 +131,20 @@ export const formController = {
     },
 
     /**
-     * Ejecuta todas las validaciones en cadena y muestra el feedback final.
+     * Función que se ejecuta al intentar enviar el formulario.
+     * Llama a todas las validaciones y si todas pasan, muestra éxito.
      */
     handleSubmit: () => {
+        // Limpiamos mensaje de éxito anterior por si acaso
         ui.clearSuccess();
         
+        // Ejecutamos todas las validaciones para que salgan todos los errores a la vez si los hay
         const isBlancasValid = formController.validateBlancas();
         const isNegrasValid = formController.validateNegras();
         const isFechaValid = formController.validateFecha();
         const isResultadoValid = formController.validateResultado();
 
+        // Si todo es true (AND lógico), entonces el formulario es válido
         if (isBlancasValid && isNegrasValid && isFechaValid && isResultadoValid) {
             ui.showSuccess('Partida registrada correctamente.');
         }

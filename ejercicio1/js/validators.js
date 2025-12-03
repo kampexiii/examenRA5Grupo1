@@ -1,39 +1,54 @@
 /**
- * Conjunto de validadores puros que encapsulan las reglas de negocio del formulario.
+ * Objeto que contiene todas las funciones de validación pura.
+ * Aquí metemos la lógica de negocio para no mezclarla con el DOM.
+ * Así es más fácil de testear y reutilizar.
  */
 export const validators = {
     /**
-     * Comprueba que un nombre solo contenga letras y espacios.
-     * @param {string} name - Nombre del jugador introducido por el usuario.
-     * @returns {boolean} Resultado de la validación sintáctica.
+     * Comprueba si el nombre es válido (solo letras y espacios).
+     * 
+     * @param {string} name - El nombre que ha escrito el usuario.
+     * @returns {boolean} Devuelve true si cumple la expresión regular.
      */
     isValidName: (name) => {
+        // Usamos una regex para permitir solo letras (mayúsculas/minúsculas) y espacios.
+        // ^ indica principio de línea y $ final, para que valide todo el string.
         const regex = /^[a-zA-Z\s]+$/;
         return regex.test(name);
     },
+
     /**
-     * Evalúa si dos nombres representan jugadores distintos en comparación insensible a mayúsculas.
-     * @param {string} name1 - Primer nombre de jugador.
-     * @param {string} name2 - Segundo nombre de jugador.
-     * @returns {boolean} `true` cuando los jugadores son distintos.
+     * Comprueba que los dos jugadores no sean la misma persona.
+     * Comparamos los nombres en minúsculas y sin espacios sobrantes para evitar trucos.
+     * 
+     * @param {string} name1 - Nombre del jugador de blancas.
+     * @param {string} name2 - Nombre del jugador de negras.
+     * @returns {boolean} True si son diferentes, false si son iguales.
      */
     areNamesDifferent: (name1, name2) => {
+        // trim() quita espacios al principio y final, toLowerCase() lo pone todo en minúsculas
         return name1.trim().toLowerCase() !== name2.trim().toLowerCase();
     },
+
     /**
-     * Determina si la fecha proporcionada pertenece al pasado o al día actual.
-     * @param {string} dateString - Fecha en formato ISO `YYYY-MM-DD` proveniente del input.
-     * @returns {boolean} `true` cuando la fecha no supera el día de hoy.
+     * Valida que la fecha no sea futura (puede ser hoy o pasado).
+     * 
+     * @param {string} dateString - La fecha que viene del input type="date" (YYYY-MM-DD).
+     * @returns {boolean} True si la fecha es válida (hoy o antes).
      */
     isDateValid: (dateString) => {
-        if (!dateString) return false;
-        // Parseamos manualmente para mantener la zona horaria local y evitar desajustes por UTC
+        if (!dateString) return false; // Si no hay fecha, no es válida
+        
+        // Desestructuramos la fecha para crear el objeto Date localmente
+        // Ojo: en el constructor de Date, los meses van de 0 a 11, por eso restamos 1
         const [year, month, day] = dateString.split('-').map(Number);
         const inputDate = new Date(year, month - 1, day);
         
+        // Creamos la fecha de hoy y le quitamos la hora para comparar solo días
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
+        // Si la fecha introducida es menor o igual a hoy, es válida
         return inputDate <= today;
     }
 };
