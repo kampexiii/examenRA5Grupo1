@@ -8,10 +8,13 @@ export const validators = {
     },
     isDateValid: (dateString) => {
         if (!dateString) return false;
-        const inputDate = new Date(dateString);
+        // Parse manually to ensure local time construction
+        const [year, month, day] = dateString.split('-').map(Number);
+        const inputDate = new Date(year, month - 1, day);
+        
         const today = new Date();
-        // Reset time part for accurate date comparison
         today.setHours(0, 0, 0, 0);
+        
         return inputDate <= today;
     }
 };
