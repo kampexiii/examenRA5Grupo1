@@ -1,20 +1,28 @@
-// Utilidades de UI para centralizar mensajes y poder cambiarlos rapido.
+/**
+ * Objeto UI (User Interface) para manejar todo lo visual.
+ * Aquí ponemos las funciones que tocan el DOM para mostrar errores o mensajes de éxito.
+ * Separar esto ayuda a tener el código más ordenado.
+ */
 export const ui = {
     /**
-     * Muestra un error concreto bajo el input indicado.
-     * @param {string} elementId Span objetivo donde pintamos el texto.
-     * @param {string} message Mensaje que se ve en pantalla.
+     * Muestra un mensaje de error en un elemento específico.
+     * 
+     * @param {string} elementId - El ID del span o div donde va el error.
+     * @param {string} message - El texto del error que queremos que lea el usuario.
      */
     showError: (elementId, message) => {
         const errorElement = document.getElementById(elementId);
+        // Comprobamos que el elemento existe antes de intentar cambiarlo para que no pete
         if (errorElement) {
             errorElement.textContent = message;
         }
     },
 
     /**
-     * Elimina el texto de error cuando deja de ser necesario.
-     * @param {string} elementId Span objetivo.
+     * Borra el mensaje de error (lo deja vacío).
+     * Se usa cuando el campo ya es válido.
+     * 
+     * @param {string} elementId - El ID del elemento a limpiar.
      */
     clearError: (elementId) => {
         const errorElement = document.getElementById(elementId);
@@ -24,19 +32,21 @@ export const ui = {
     },
 
     /**
-     * Enseña un mensaje de exito general en el bloque principal.
-     * @param {string} message Texto confirmando la partida.
+     * Muestra el mensaje de éxito global cuando todo ha ido bien.
+     * 
+     * @param {string} message - El mensaje de "Todo OK".
      */
     showSuccess: (message) => {
         const successElement = document.getElementById('ok');
         if (successElement) {
             successElement.textContent = message;
-            successElement.style.color = 'green'; // Optional: make it look like success
+            successElement.style.color = 'green'; // Le pongo color verde para que se vea positivo
         }
     },
 
     /**
-     * Limpia el mensaje de exito para dejar la pantalla limpia.
+     * Limpia el mensaje de éxito.
+     * Útil si queremos resetear el estado visual.
      */
     clearSuccess: () => {
         const successElement = document.getElementById('ok');

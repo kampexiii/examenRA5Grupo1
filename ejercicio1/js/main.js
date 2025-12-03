@@ -1,7 +1,11 @@
-// Punto de entrada sencillo: cuando la pagina esta lista arranco el controlador del formulario.
 import { formController } from './formController.js';
 
+/**
+ * Punto de entrada principal de la aplicación.
+ * Esperamos a que el DOM esté completamente cargado (DOMContentLoaded)
+ * para asegurarnos de que los elementos HTML existen antes de intentar acceder a ellos.
+ */
 document.addEventListener('DOMContentLoaded', () => {
-    // Uso DOMContentLoaded para asegurar que los elementos existen antes de buscarlos.
+    // Iniciamos el controlador del formulario
     formController.init();
 });
