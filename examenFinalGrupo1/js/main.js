@@ -2,6 +2,10 @@ import { formController } from './formController.js';
 import { añadirPartida, vaciarPartidas } from './data.js';
 import { ui } from './ui.js';
 
+/**
+ * Punto de entrada principal de la aplicación.
+ * Aquí orquestamos todo: inicializamos el formulario y manejamos el botón de reset.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     
     // Inicializar el controlador del formulario
@@ -32,8 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnReset = document.getElementById('btn-reset');
     if (btnReset) {
         btnReset.onclick = () => {
+            // Pedimos confirmación al usuario antes de borrar todo
             const confirmacion = confirm('¿Estás seguro de que deseas vaciar el registro de partidas?');
             if (confirmacion) {
+                // Si dice que sí, vaciamos datos y actualizamos UI
                 vaciarPartidas();
                 ui.actualizarResumen();
                 ui.showSuccess('Registro vaciado correctamente.');
@@ -42,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const okMsg = document.getElementById('ok');
                 if(okMsg) okMsg.style.color = 'blue';
 
+                // Limpiamos el mensaje después de 3 segundos
                 setTimeout(() => {
                     ui.clearSuccess();
                 }, 3000);
