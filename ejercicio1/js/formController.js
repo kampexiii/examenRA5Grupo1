@@ -1,7 +1,11 @@
+// Controlador del formulario: orquesta validaciones y mensajes visuales.
 import { validators } from './validators.js';
 import { ui } from './ui.js';
 
 export const formController = {
+    /**
+     * Arranca los listeners del formulario para tener validacion en vivo y al enviar.
+     */
     init: () => {
         const form = document.getElementById('form-partida');
         const blancasInput = document.getElementById('blancas');
@@ -9,19 +13,23 @@ export const formController = {
         const fechaInput = document.getElementById('fecha');
         const resultadoInput = document.getElementById('resultado');
 
-        // Real-time validation
+        // Validacion en tiempo real para dar feedback rapido.
         blancasInput.addEventListener('input', () => formController.validateBlancas());
         negrasInput.addEventListener('input', () => formController.validateNegras());
         fechaInput.addEventListener('input', () => formController.validateFecha());
         resultadoInput.addEventListener('input', () => formController.validateResultado());
 
-        // Submit validation
+        // Validacion completa cuando se envia el formulario.
         form.addEventListener('submit', (event) => {
             event.preventDefault();
             formController.handleSubmit();
         });
     },
 
+    /**
+     * Comprueba el nombre de las piezas blancas y pinta errores si hace falta.
+     * @returns {boolean} True si todo ok.
+     */
     validateBlancas: () => {
         const blancasInput = document.getElementById('blancas');
         const negrasInput = document.getElementById('negras');
@@ -35,10 +43,10 @@ export const formController = {
             ui.clearError('err-blancas');
         }
 
-        // Check equality if both have values
+        // Compruebo que los nombres no sean gemelos.
         if (isValid && negrasInput.value && !validators.areNamesDifferent(name, negrasInput.value)) {
-             ui.showError('err-blancas', 'Los jugadores no pueden ser iguales.');
-             isValid = false;
+            ui.showError('err-blancas', 'Los jugadores no pueden ser iguales.');
+            isValid = false;
         } else if (isValid) {
              // If this is valid, we should also clear the error on the other field if it was about equality
              // But to keep it simple, we just clear this one's error if it was set.
@@ -48,6 +56,10 @@ export const formController = {
         return isValid;
     },
 
+    /**
+     * Mismo plan que validateBlancas pero para el campo de negras.
+     * @returns {boolean} True si supera las reglas.
+     */
     validateNegras: () => {
         const blancasInput = document.getElementById('blancas');
         const negrasInput = document.getElementById('negras');
@@ -69,6 +81,10 @@ export const formController = {
         return isValid;
     },
 
+    /**
+     * Valida la fecha para que no se registren partidas futuristas.
+     * @returns {boolean} True cuando la fecha es valida.
+     */
     validateFecha: () => {
         const fechaInput = document.getElementById('fecha');
         const date = fechaInput.value;
@@ -83,19 +99,26 @@ export const formController = {
         return isValid;
     },
 
+    /**
+     * Asegura que el select de resultado tenga una opcion real.
+     * @returns {boolean} True si se eligio algo.
+     */
     validateResultado: () => {
         const resultadoInput = document.getElementById('resultado');
         let isValid = true;
         
         if (!resultadoInput.value) {
-             ui.showError('err-resultado', 'Debe seleccionar un resultado.');
-             isValid = false;
+            ui.showError('err-resultado', 'Debe seleccionar un resultado.');
+            isValid = false;
         } else {
             ui.clearError('err-resultado');
         }
         return isValid;
     },
 
+    /**
+     * Lanza todas las validaciones y muestra un mensaje bonito si todo pasa.
+     */
     handleSubmit: () => {
         ui.clearSuccess();
         
